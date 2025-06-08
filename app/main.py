@@ -1,7 +1,7 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routers import tasks, db_tasks
+from .routers import tasks
 
 app = FastAPI()
 
@@ -23,7 +23,6 @@ app.add_middleware(
 )
 
 app.include_router(tasks.router)
-app.include_router(db_tasks.router)
 
 
 @app.get("/")
