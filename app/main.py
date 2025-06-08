@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .routers import tasks, attendance
 from .migrate import run_migrations
+from .preview import load_preview_data
 
 app = FastAPI()
 
@@ -10,6 +11,7 @@ app = FastAPI()
 @app.on_event("startup")
 def _startup() -> None:
     run_migrations()
+    load_preview_data()
 
 # Configure CORS based on the optional CORS_ALLOW_ORIGINS environment
 # variable. When unset or set to "*", any origin is allowed. The variable

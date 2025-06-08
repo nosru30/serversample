@@ -6,6 +6,8 @@
   not provided.
 - `CORS_ALLOW_ORIGINS`: comma-separated list of origins allowed by CORS.
   Defaults to `*` to permit any origin.
+- `PREVIEW_MODE`: when set to `1`, the app seeds the database with demo data so
+  you can try the attendance APIs without admin endpoints.
 
 ## Development setup
 
@@ -88,3 +90,10 @@ Key constraints for the current prototype:
 These constraints will evolve, but the generated schema can be used as the
 authoritative reference for field names and types when implementing the
 front-end.
+
+When `PREVIEW_MODE=1` is set, the database is seeded with a demo employee:
+
+* Email: `demo@example.com`
+* Password: `demo`
+
+This allows basic login and attendance entry without setting up admin APIs.
