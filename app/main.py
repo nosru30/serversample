@@ -1,9 +1,15 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routers import tasks
+from .routers import tasks, attendance
+from .migrate import run_migrations
 
 app = FastAPI()
+
+
+@app.on_event("startup")
+def _startup() -> None:
+    run_migrations()
 
 # Configure CORS based on the optional CORS_ALLOW_ORIGINS environment
 # variable. When unset or set to "*", any origin is allowed. The variable
@@ -23,6 +29,7 @@ app.add_middleware(
 )
 
 app.include_router(tasks.router)
+app.include_router(attendance.router)
 
 
 @app.get("/")
