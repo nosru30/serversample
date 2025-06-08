@@ -1,6 +1,6 @@
 import datetime
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, status, Header
+from fastapi import APIRouter, Depends, HTTPException, status, Header, Response
 from sqlalchemy.orm import Session
 
 from ..db import (
@@ -78,24 +78,37 @@ def read_me(current_user: UserORM = Depends(get_current_user), db: Session = Dep
     return UserRead(id=current_user.id, email=current_user.email, role=role_name)
 
 
-@router.post("/attendances", response_model=AttendanceRead, status_code=status.HTTP_201_CREATED)
-def create_attendance(
+@router.post("/attendances", response_model=AttendanceRead)
+def upsert_attendance(
     attendance: AttendanceCreate,
+    response: Response,
     current_employee: EmployeeORM = Depends(get_current_employee),
     db: Session = Depends(get_db),
 ):
-    att = AttendanceORM(
-        employee_id=current_employee.id,
-        date=attendance.date,
-        start_time=attendance.start_time,
-        end_time=attendance.end_time,
-        break_duration_minutes=attendance.break_duration_minutes,
-        notes_free_text=attendance.notes_free_text,
-    )
-    db.add(att)
+    record = db.query(AttendanceORM).filter(
+        AttendanceORM.employee_id == current_employee.id,
+        AttendanceORM.date == attendance.date,
+    ).first()
+    if record:
+        record.start_time = attendance.start_time
+        record.end_time = attendance.end_time
+        record.break_duration_minutes = attendance.break_duration_minutes
+        record.notes_free_text = attendance.notes_free_text
+        response.status_code = status.HTTP_200_OK
+    else:
+        record = AttendanceORM(
+            employee_id=current_employee.id,
+            date=attendance.date,
+            start_time=attendance.start_time,
+            end_time=attendance.end_time,
+            break_duration_minutes=attendance.break_duration_minutes,
+            notes_free_text=attendance.notes_free_text,
+        )
+        db.add(record)
+        response.status_code = status.HTTP_201_CREATED
     db.commit()
-    db.refresh(att)
-    return AttendanceRead.model_validate(att)
+    db.refresh(record)
+    return AttendanceRead.model_validate(record)
 
 
 @router.get("/attendances", response_model=List[AttendanceRead])

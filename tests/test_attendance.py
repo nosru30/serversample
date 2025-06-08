@@ -59,8 +59,17 @@ def test_attendance_crud():
     r = client.post("/attendances", json=payload, headers={"Authorization": f"Bearer {token}"})
     assert r.status_code == 201
     att_id = r.json()["id"]
+
+    # update the same day
+    updated = payload.copy()
+    updated["start_time"] = "2024-01-01T10:00:00Z"
+    r2 = client.post("/attendances", json=updated, headers={"Authorization": f"Bearer {token}"})
+    assert r2.status_code == 200
+    assert r2.json()["id"] == att_id
+    assert r2.json()["start_time"].startswith("2024-01-01T10:00:00")
     month = client.get("/attendances?month=2024-01", headers={"Authorization": f"Bearer {token}"})
     assert month.status_code == 200
     assert len(month.json()) == 1
+    assert month.json()[0]["start_time"].startswith("2024-01-01T10:00:00")
     d = client.delete(f"/attendances/{att_id}", headers={"Authorization": f"Bearer {token}"})
     assert d.status_code == 204
