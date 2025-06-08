@@ -5,14 +5,8 @@ from sqlalchemy.orm import Session
 from ..models import Task
 import logging
 from ..db import SessionLocal, engine, TaskORM
-from ..migrate import run_migrations
 
 logger = logging.getLogger(__name__)
-
-# Ensure tables exist and log the outcome so startup issues are visible
-logger.info("Ensuring database tables exist")
-run_migrations()
-logger.info("Database tables ready")
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 

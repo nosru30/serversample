@@ -3,3 +3,6 @@ uvicorn[standard]
 SQLAlchemy>=1.4
 httpx
 psycopg2-binary
+pydantic>=2
+passlib
+pytest
