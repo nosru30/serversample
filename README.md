@@ -11,4 +11,5 @@
 
 The application exposes `/tasks` for CRUD operations on tasks persisted in the
 configured database. Tasks may include nested `sub_tasks`, which are stored as
-rows referencing their parent task.
+rows referencing their parent task. Database schema migrations are managed with
+Alembic and applied automatically at startup.

@@ -4,13 +4,14 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from ..models import Task
 import logging
-from ..db import SessionLocal, Base, engine, TaskORM
+from ..db import SessionLocal, engine, TaskORM
+from ..migrate import run_migrations
 
 logger = logging.getLogger(__name__)
 
 # Ensure tables exist and log the outcome so startup issues are visible
-logger.info("Ensuring database tables exist")
-Base.metadata.create_all(bind=engine)
+logger.info("Ensuring database tables exist via Alembic")
+run_migrations()
 logger.info("Database tables ready")
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])

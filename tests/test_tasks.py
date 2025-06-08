@@ -5,17 +5,17 @@ from fastapi.testclient import TestClient
 
 # Ensure DATABASE_URL points to a reachable database. These tests will skip if
 # the variable isn't provided.
+os.environ["DATABASE_URL"] = "sqlite:///./test_tasks.db"
 pg_url = os.getenv("DATABASE_URL")
-if not pg_url:
-    pytest.skip("DATABASE_URL not set, skipping DB tests", allow_module_level=True)
 
 from app.main import app
 from app.db import Base, engine
+from app.migrate import run_migrations
 
 
 @pytest.fixture(autouse=True)
 def ensure_tables():
-    Base.metadata.create_all(bind=engine)
+    run_migrations()
 
 client = TestClient(app)
 

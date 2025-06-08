@@ -3,12 +3,13 @@ import sqlalchemy
 import pytest
 
 pg_url = os.getenv("DATABASE_URL")
-if not pg_url:
-    pytest.skip('DATABASE_URL not set, skipping Postgres tests', allow_module_level=True)
+if not pg_url or not pg_url.startswith("postgres"):
+    pytest.skip('DATABASE_URL not set to Postgres, skipping Postgres tests', allow_module_level=True)
 
 from fastapi.testclient import TestClient
 from app.db import Base, engine, SessionLocal, TaskORM
 from app.main import app
+from app.migrate import run_migrations
 
 
 def test_postgres_migration_and_crud():
@@ -18,7 +19,7 @@ def test_postgres_migration_and_crud():
 
     # Ensure clean slate
     Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
+    run_migrations()
 
     insp = sqlalchemy.inspect(engine)
     assert insp.has_table('tasks')

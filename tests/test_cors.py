@@ -2,7 +2,7 @@ import os
 from fastapi.testclient import TestClient
 
 # Set environment variables for the app before import
-os.environ.setdefault("DATABASE_URL", "sqlite:///./test_cors.db")
+os.environ["DATABASE_URL"] = "sqlite:///./test_cors.db"
 os.environ["CORS_ALLOW_ORIGINS"] = "*"
 
 from app.main import app
