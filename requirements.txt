@@ -3,4 +3,3 @@ uvicorn[standard]
 SQLAlchemy>=1.4
 httpx
 psycopg2-binary
-alembic

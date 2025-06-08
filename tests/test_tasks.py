@@ -13,7 +13,7 @@ from app.db import Base, engine
 from app.migrate import run_migrations
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(scope="module", autouse=True)
 def ensure_tables():
     run_migrations()
 

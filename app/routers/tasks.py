@@ -10,7 +10,7 @@ from ..migrate import run_migrations
 logger = logging.getLogger(__name__)
 
 # Ensure tables exist and log the outcome so startup issues are visible
-logger.info("Ensuring database tables exist via Alembic")
+logger.info("Ensuring database tables exist")
 run_migrations()
 logger.info("Database tables ready")
 

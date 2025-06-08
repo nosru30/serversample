@@ -11,5 +11,5 @@
 
 The application exposes `/tasks` for CRUD operations on tasks persisted in the
 configured database. Tasks may include nested `sub_tasks`, which are stored as
-rows referencing their parent task. Database schema migrations are managed with
-Alembic and applied automatically at startup.
+rows referencing their parent task. On startup, existing tables are dropped and
+recreated automatically so the schema is always in sync with the models.
