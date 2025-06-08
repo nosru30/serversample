@@ -80,6 +80,8 @@ Key constraints for the current prototype:
 * `end_time` may be earlier than `start_time` to support overnight shifts.
 * `Authorization` headers must include `Bearer <token>` returned from
   `POST /login`.
+* Tokens are stored in memory only in this prototype and will be
+  invalidated if the application restarts.
 * Only minimal validation is applied to break durations and note fields; the
   front end may implement additional checks as needed.
 

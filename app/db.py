@@ -88,8 +88,8 @@ class AttendanceORM(Base):
     id = Column(Integer, primary_key=True)
     employee_id = Column(Integer, ForeignKey("employees.id"), nullable=False)
     date = Column(Date, nullable=False)
-    start_time = Column(DateTime, nullable=False)
-    end_time = Column(DateTime, nullable=False)
+    start_time = Column(DateTime(timezone=True), nullable=False)
+    end_time = Column(DateTime(timezone=True), nullable=False)
     break_duration_minutes = Column(Integer, default=0, nullable=False)
     notes_free_text = Column(String, nullable=True)
 

@@ -1,14 +1,18 @@
-import hashlib
 import secrets
 from typing import Dict, Optional
+from passlib.context import CryptContext
 
 _tokens: Dict[str, int] = {}
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 def hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode()).hexdigest()
+    """Hash the password using bcrypt for security."""
+    return pwd_context.hash(password)
 
 def verify_password(password: str, hashed: str) -> bool:
-    return hash_password(password) == hashed
+    """Verify a password against its hashed value."""
+    return pwd_context.verify(password, hashed)
 
 def create_token(user_id: int) -> str:
     token = secrets.token_urlsafe(32)

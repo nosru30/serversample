@@ -51,8 +51,8 @@ def test_attendance_crud():
     token = login.json()["token"]
     payload = {
         "date": "2024-01-01",
-        "start_time": "2024-01-01T09:00:00",
-        "end_time": "2024-01-01T17:00:00",
+        "start_time": "2024-01-01T09:00:00Z",
+        "end_time": "2024-01-01T17:00:00Z",
         "break_duration_minutes": 60,
         "notes_free_text": "work",
     }

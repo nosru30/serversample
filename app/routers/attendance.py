@@ -48,6 +48,18 @@ def get_current_user(
     return user
 
 
+def get_current_employee(
+    current_user: UserORM = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> EmployeeORM:
+    employee = (
+        db.query(EmployeeORM).filter(EmployeeORM.user_id == current_user.id).first()
+    )
+    if not employee:
+        raise HTTPException(status_code=400, detail="Employee record not found")
+    return employee
+
+
 @router.post("/login", response_model=LoginResponse)
 def login(credentials: UserCreate, db: Session = Depends(get_db)):
     user = db.query(UserORM).filter(UserORM.email == credentials.email).first()
@@ -60,21 +72,20 @@ def login(credentials: UserCreate, db: Session = Depends(get_db)):
 @router.get("/me", response_model=UserRead)
 def read_me(current_user: UserORM = Depends(get_current_user), db: Session = Depends(get_db)):
     role = db.query(RoleORM).filter(RoleORM.id == current_user.role_id).first()
-    role_name = role.name if role else ""
+    if not role:
+        raise HTTPException(status_code=500, detail="Role not found")
+    role_name = role.name
     return UserRead(id=current_user.id, email=current_user.email, role=role_name)
 
 
 @router.post("/attendances", response_model=AttendanceRead, status_code=status.HTTP_201_CREATED)
 def create_attendance(
     attendance: AttendanceCreate,
-    current_user: UserORM = Depends(get_current_user),
+    current_employee: EmployeeORM = Depends(get_current_employee),
     db: Session = Depends(get_db),
 ):
-    employee = db.query(EmployeeORM).filter(EmployeeORM.user_id == current_user.id).first()
-    if not employee:
-        raise HTTPException(status_code=400, detail="Employee record not found")
     att = AttendanceORM(
-        employee_id=employee.id,
+        employee_id=current_employee.id,
         date=attendance.date,
         start_time=attendance.start_time,
         end_time=attendance.end_time,
@@ -84,27 +95,18 @@ def create_attendance(
     db.add(att)
     db.commit()
     db.refresh(att)
-    return AttendanceRead(
-        id=att.id,
-        employee_id=att.employee_id,
-        date=att.date,
-        start_time=att.start_time,
-        end_time=att.end_time,
-        break_duration_minutes=att.break_duration_minutes,
-        notes_free_text=att.notes_free_text,
-    )
+    return AttendanceRead.model_validate(att)
 
 
 @router.get("/attendances", response_model=List[AttendanceRead])
 def read_my_attendances(
     month: Optional[str] = None,
-    current_user: UserORM = Depends(get_current_user),
+    current_employee: EmployeeORM = Depends(get_current_employee),
     db: Session = Depends(get_db),
 ):
-    employee = db.query(EmployeeORM).filter(EmployeeORM.user_id == current_user.id).first()
-    if not employee:
-        raise HTTPException(status_code=400, detail="Employee record not found")
-    query = db.query(AttendanceORM).filter(AttendanceORM.employee_id == employee.id)
+    query = db.query(AttendanceORM).filter(
+        AttendanceORM.employee_id == current_employee.id
+    )
     if month:
         try:
             year, mon = map(int, month.split("-"))
@@ -117,31 +119,19 @@ def read_my_attendances(
         except ValueError:
             raise HTTPException(status_code=400, detail="Invalid month format")
     records = query.all()
-    result = [
-        AttendanceRead(
-            id=r.id,
-            employee_id=r.employee_id,
-            date=r.date,
-            start_time=r.start_time,
-            end_time=r.end_time,
-            break_duration_minutes=r.break_duration_minutes,
-            notes_free_text=r.notes_free_text,
-        )
-        for r in records
-    ]
-    return result
+    return [AttendanceRead.model_validate(r) for r in records]
 
 
 @router.delete("/attendances/{attendance_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_attendance(
     attendance_id: int,
-    current_user: UserORM = Depends(get_current_user),
+    current_employee: EmployeeORM = Depends(get_current_employee),
     db: Session = Depends(get_db),
 ):
-    employee = db.query(EmployeeORM).filter(EmployeeORM.user_id == current_user.id).first()
-    if not employee:
-        raise HTTPException(status_code=400, detail="Employee record not found")
-    record = db.query(AttendanceORM).filter(AttendanceORM.id == attendance_id, AttendanceORM.employee_id == employee.id).first()
+    record = db.query(AttendanceORM).filter(
+        AttendanceORM.id == attendance_id,
+        AttendanceORM.employee_id == current_employee.id,
+    ).first()
     if not record:
         raise HTTPException(status_code=404, detail="Attendance not found")
     db.delete(record)
