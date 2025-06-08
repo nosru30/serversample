@@ -1,5 +1,4 @@
-from app.db_models import Base
-from app.db import engine
+from app.db import Base, engine
 
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)

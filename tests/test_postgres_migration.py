@@ -7,8 +7,7 @@ if not pg_url:
     pytest.skip('DATABASE_URL not set, skipping Postgres tests', allow_module_level=True)
 
 from fastapi.testclient import TestClient
-from app.db import Base, engine, SessionLocal
-from app.db_models import TaskORM
+from app.db import Base, engine, SessionLocal, TaskORM
 from app.main import app
 
 
@@ -29,7 +28,7 @@ def test_postgres_migration_and_crud():
 
     client = TestClient(app)
     payload = {'title': 'PG Task from test'}
-    r = client.post('/dbtasks/', json=payload)
+    r = client.post('/tasks/', json=payload)
     assert r.status_code == 201
     data = r.json()
     assert data['title'] == payload['title']
