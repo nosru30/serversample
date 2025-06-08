@@ -3,11 +3,11 @@ import uuid
 import pytest
 from fastapi.testclient import TestClient
 
-# Ensure DATABASE_URL points to a reachable database. These tests will skip if
-# the variable isn't provided.
-pg_url = os.getenv("DATABASE_URL")
+# Ensure DATABASE_PUBLIC_URL points to a reachable database. These tests will
+# skip if the variable isn't provided.
+pg_url = os.getenv("DATABASE_PUBLIC_URL")
 if not pg_url:
-    pytest.skip("DATABASE_URL not set, skipping DB tests", allow_module_level=True)
+    pytest.skip("DATABASE_PUBLIC_URL not set, skipping DB tests", allow_module_level=True)
 
 from app.main import app
 from app.db import Base, engine

@@ -2,9 +2,9 @@ import os
 import sqlalchemy
 import pytest
 
-pg_url = os.getenv("DATABASE_URL")
+pg_url = os.getenv("DATABASE_PUBLIC_URL")
 if not pg_url:
-    pytest.skip('DATABASE_URL not set, skipping Postgres tests', allow_module_level=True)
+    pytest.skip('DATABASE_PUBLIC_URL not set, skipping Postgres tests', allow_module_level=True)
 
 from fastapi.testclient import TestClient
 from app.db import Base, engine, SessionLocal
@@ -13,9 +13,9 @@ from app.main import app
 
 
 def test_postgres_migration_and_crud():
-    pg_url = os.getenv("DATABASE_URL")
+    pg_url = os.getenv("DATABASE_PUBLIC_URL")
     if not pg_url:
-        pytest.skip('DATABASE_URL not set, skipping Postgres tests')
+        pytest.skip('DATABASE_PUBLIC_URL not set, skipping Postgres tests')
 
     # Ensure clean slate
     Base.metadata.drop_all(bind=engine)
@@ -24,7 +24,7 @@ def test_postgres_migration_and_crud():
     insp = sqlalchemy.inspect(engine)
     assert insp.has_table('tasks')
 
-    # verify the app connected using the provided DATABASE_URL
+    # verify the app connected using the provided DATABASE_PUBLIC_URL
     assert engine.url.database == sqlalchemy.engine.url.make_url(pg_url).database
 
     client = TestClient(app)
