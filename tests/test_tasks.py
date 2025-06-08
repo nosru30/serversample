@@ -1,5 +1,11 @@
+import os
 import uuid
 from fastapi.testclient import TestClient
+
+# Ensure a DATABASE_URL is set before importing the app. Tests use a local
+# SQLite database so they don't rely on an external PostgreSQL instance.
+os.environ.setdefault("DATABASE_URL", "sqlite:///./test_tasks.db")
+
 from app.main import app  # Main FastAPI application
 
 client = TestClient(app)

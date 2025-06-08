@@ -1,9 +1,10 @@
 from fastapi import FastAPI
-from .routers import tasks  # Assuming tasks.py is in routers folder
+from .routers import tasks, db_tasks
 
 app = FastAPI()
 
 app.include_router(tasks.router)
+app.include_router(db_tasks.router)
 
 
 @app.get("/")
