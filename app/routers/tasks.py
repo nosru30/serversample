@@ -3,10 +3,15 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from ..models import Task
+import logging
 from ..db import SessionLocal, Base, engine, TaskORM
 
-# Ensure tables exist
+logger = logging.getLogger(__name__)
+
+# Ensure tables exist and log the outcome so startup issues are visible
+logger.info("Ensuring database tables exist")
 Base.metadata.create_all(bind=engine)
+logger.info("Database tables ready")
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
