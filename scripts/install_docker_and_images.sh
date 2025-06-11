@@ -10,6 +10,7 @@
 set -euo pipefail
 
 POSTGRES_IMAGE="postgres:15-alpine"
+USER="${USER:-Pavarotti}"
 
 # --------------------
 # 1) Install Docker
