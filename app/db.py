@@ -5,9 +5,13 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 # Read the connection string from the standard DATABASE_URL environment
 # variable. Tests will set this to a temporary SQLite database when a real
 # database isn't available.
+# Allow forcing SQLite with an env flag (useful for offline dev/CI)
+FORCE_SQLITE = os.getenv("FORCE_SQLITE", "false").lower() == "true"
+
+# Prefer DATABASE_URL when supplied, otherwise fall back to local SQLite.
 DATABASE_URL = os.getenv("DATABASE_URL")
-if not DATABASE_URL:
-    raise RuntimeError("DATABASE_URL must be set")
+if not DATABASE_URL or FORCE_SQLITE:
+    DATABASE_URL = "sqlite:///./local.db"
 
 connect_args = {}
 if DATABASE_URL.startswith("sqlite"):

@@ -3,3 +3,4 @@ uvicorn[standard]
 SQLAlchemy>=1.4
 httpx
 psycopg2-binary
+ruff==0.4.3
