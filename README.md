@@ -1,5 +1,38 @@
 # serversample
 
+## 🚀 Quickstart (Docker – recommended)
+
+```bash
+# Full stack (FastAPI + Postgres) will start on http://localhost:8000
+make start
+```
+
+開発環境をシンプルに保ちたい場合は上記 `make start` だけで
+コンテナが構築・起動します。停止は `make compose-down` です。
+
+---
+
+## Setup (using venv)
+
+```bash
+# Create virtual environment (Python 3.10 など)
+python -m venv .venv
+
+# Activate the environment
+source .venv/bin/activate        # Linux/macOS
+# .\\.venv\\Scripts\\Activate.ps1 # Windows (PowerShell)
+
+# Upgrade pip and install dependencies
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### Running locally
+
+```bash
+uvicorn app.main:app --reload
+```
+
 ## Environment variables
 
 - `DATABASE_URL`: connection string for the database. Tests use a SQLite file if
